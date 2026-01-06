@@ -1,102 +1,111 @@
-# Loan Application Portal (Production-Grade Demo)
+# Loan Application Portal  
+**Next.js + React + TypeScript + GraphQL + Prisma + PostgreSQL**
 
-A Next.js (App Router) + React + TypeScript app that accepts loan applications and calls a GraphQL HTTP endpoint.
-The GraphQL API supports CRUD operations backed by **Postgres** via **Prisma** with input validation via **Zod**.
+A production-grade web application that accepts loan applications via a React UI and processes them through a GraphQL HTTP API.  
+Built using modern patterns suitable for real-world enterprise systems.
 
-## Prereqs
+---
+
+## ✨ Features
+
+- **Next.js App Router** (React 18, TypeScript)
+- **GraphQL HTTP API** using GraphQL Yoga
+- **CRUD + Workflow** for loan applications
+  - Draft → Submitted → Approved / Rejected
+- **PostgreSQL** database (Docker-based local dev)
+- **Prisma ORM** for schema & migrations
+- **Zod validation** for GraphQL inputs
+- **Optional API key security**
+- Clean separation of concerns (UI / API / DB)
+- Ready to extend with auth, RBAC, auditing, and observability
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+Browser (React / Next.js)
+        |
+        |  GraphQL (HTTP)
+        v
+Next.js API Route (/api/graphql)
+        |
+        |  Prisma ORM
+        v
+PostgreSQL Database
+```
+
+---
+
+## 📁 Project Structure
+
+```
+loan-graphql-prod/
+├── app/
+│   ├── api/graphql/route.ts
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── globals.css
+├── graphql/
+│   ├── schema.ts
+│   └── validators.ts
+├── lib/
+│   ├── prisma.ts
+│   └── graphqlClient.ts
+├── prisma/
+│   └── schema.prisma
+├── docker-compose.yml
+├── .env.example
+├── package.json
+└── README.md
+```
+
+---
+
+## ✅ Prerequisites
+
 - Node.js 20+
-- Docker (for local Postgres)
+- Docker / Docker Desktop
 
-## 1) Install
+---
+
+## 🚀 Getting Started
+
 ```bash
 npm install
-```
-
-## 2) Configure env
-```bash
 cp .env.example .env
-```
-
-> Optional: Set `GRAPHQL_API_KEY` in `.env` to protect the endpoint, and send `x-api-key` header from clients.
-
-## 3) Start Postgres
-```bash
 docker compose up -d
-```
-
-## 4) Create DB schema (Prisma migrate)
-```bash
 npx prisma generate
 npx prisma migrate dev --name init
-```
-
-## 5) Run
-```bash
 npm run dev
 ```
 
-- App UI: http://localhost:3000
-- GraphQL endpoint (GraphiQL in dev): http://localhost:3000/api/graphql
+---
 
-## GraphQL operations (examples)
+## 🌐 Access Points
 
-Create:
-```graphql
-mutation Create($input: CreateLoanApplicationInput!) {
-  createLoanApplication(input: $input) {
-    id
-    status
-    createdAt
-  }
-}
-```
+- UI: http://localhost:3000  
+- GraphQL: http://localhost:3000/api/graphql
 
-Variables:
-```json
-{
-  "input": {
-    "fullName": "Pat Siazon",
-    "email": "pat@example.com",
-    "amount": 25000,
-    "termMonths": 48,
-    "purpose": "Home improvement"
-  }
-}
-```
+---
 
-List:
-```graphql
-query {
-  loanApplications(limit: 50, offset: 0) {
-    id
-    fullName
-    amount
-    status
-  }
-}
-```
+## 🔁 Loan Workflow
 
-Submit:
-```graphql
-mutation {
-  submitLoanApplication(id: "YOUR_ID") { id status updatedAt }
-}
-```
+- DRAFT → SUBMITTED → APPROVED / REJECTED
 
-Approve/Reject:
-```graphql
-mutation { approveLoanApplication(id: "YOUR_ID") { id status } }
-mutation { rejectLoanApplication(id: "YOUR_ID") { id status } }
-```
+---
 
-Delete:
-```graphql
-mutation { deleteLoanApplication(id: "YOUR_ID") }
-```
+## 🔐 Security
 
-## Production notes / hardening ideas
-- Add proper auth (JWT / session), RBAC for approval actions
-- Add audit logs and optimistic concurrency (version field)
-- Add rate limiting / request size limits
-- Replace GraphiQL in prod and enable persisted operations
-- Add observability (OpenTelemetry, structured logs)
+- Optional `x-api-key` header via `GRAPHQL_API_KEY`
+- Ready for JWT, RBAC, rate limiting
+
+---
+
+## 📦 Production Hardening Ideas
+
+- Auth & roles
+- Audit logs
+- Optimistic locking
+- OpenTelemetry
+- CI/CD pipelines
